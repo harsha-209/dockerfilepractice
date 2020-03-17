@@ -26,6 +26,8 @@ FROM webdevops/php-nginx:alpine-php7
 	RUN cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bkp
 	
 	RUN cp -R /home/nginx.conf /etc/nginx/
+	
+	RUN pwd
 
 #	RUN cp -R /home/env.php /var/www-web/application/config/production/
 	
