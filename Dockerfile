@@ -14,7 +14,7 @@ FROM webdevops/php-nginx:alpine-php7
 
 	COPY . /home/
 
-	RUN cp -R /home/* /var/www-web/
+	RUN cp -R /home/* /var/www-harshad/
 	
 	RUN cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bkp
 	
