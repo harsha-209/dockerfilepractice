@@ -10,9 +10,9 @@ FROM webdevops/php-nginx:alpine-php7
 #	RUN yum -y install nginx 
 
 #Copy Required Data from Host to container
-	RUN mkdir /var/www-harshad
-	RUN cd "/var/www-harshad"
-	RUN mkdir html
+	RUN mkdir -p /var/www-harshad/html
+#	RUN cd "/var/www-harshad"
+#	RUN mkdir html
 
 	
 	
