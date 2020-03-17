@@ -11,10 +11,17 @@ FROM webdevops/php-nginx:alpine-php7
 
 #Copy Required Data from Host to container
 	RUN mkdir /var/www-harshad
+	RUN WORKDIR /var/www-harshad
+	RUN mkdir html
+
+	
+	
 
 	COPY . /home/
 
 	RUN cp -R /home/* /var/www-harshad/
+	
+	RUN cp -R /var/www-harshad/index.htm  /var/www-harshad/html/
 	
 	RUN cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bkp
 	
