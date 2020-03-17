@@ -23,7 +23,7 @@ FROM webdevops/php-nginx:alpine-php7
 	
 	RUN pwd
 	
-	RUN cp -R /var/www-harshad/index.html  /home/var/www-harshad/html/
+	RUN cp -R /var/www-harshad/index.html  /var/www-harshad/html/
 	
 	RUN cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bkp
 	
