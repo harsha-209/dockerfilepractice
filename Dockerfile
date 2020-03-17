@@ -21,13 +21,15 @@ FROM webdevops/php-nginx:alpine-php7
 
 	RUN cp -R /home/* /var/www-harshad/
 	
+	RUN pwd
+	
 	RUN cp -R /var/www-harshad/index.html  /home/var/www-harshad/html/
 	
 	RUN cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bkp
 	
 	RUN cp -R /home/nginx.conf /etc/nginx/
 	
-	RUN pwd
+	
 
 #	RUN cp -R /home/env.php /var/www-web/application/config/production/
 	
