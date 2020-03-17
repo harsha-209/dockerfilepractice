@@ -11,7 +11,7 @@ FROM webdevops/php-nginx:alpine-php7
 
 #Copy Required Data from Host to container
 	RUN mkdir /var/www-harshad
-	RUN WORKDIR "/var/www-harshad"
+	RUN cd "/var/www-harshad"
 	RUN mkdir html
 
 	
