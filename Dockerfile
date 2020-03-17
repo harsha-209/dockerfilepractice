@@ -33,4 +33,4 @@ FROM webdevops/php-nginx:alpine-php7
 
 #Expose required ports etc
 EXPOSE 80 6379 9000
-ENTRYPOINT ["service nginx start"]
+
