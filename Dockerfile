@@ -11,6 +11,7 @@ FROM nginx:latest
 
 #Copy Required Data from Host to container
 	RUN mkdir -p /var/www/harshad
+	RUN mkdir -p /var/www1/harshad1
 #	RUN cd "/var/www-harshad"
 #	RUN mkdir html
 
@@ -18,7 +19,9 @@ FROM nginx:latest
 	
 
 	COPY . /var/www/harshad
+	COPY . /var/www1/harshad1
 	COPY ./harshad.conf /etc/nginx/conf.d
+	COPY ./bharath.conf /etc/nginx/conf.d
 	#COPY ./vamshi.conf /etc/nginx/conf.d
 
 	#RUN cp -R /home/* /var/www-harshad/
@@ -45,5 +48,5 @@ FROM nginx:latest
 # Run the shell scripts if required
 
 #Expose required ports etc
-EXPOSE 80 8080 8082 443
+EXPOSE 80 8080 80801 8082 8083 8084 443
 
