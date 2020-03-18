@@ -19,6 +19,7 @@ FROM nginx:latest
 
 	COPY . /var/www/harshad
 	COPY ./harshad.conf /etc/nginx/conf.d
+	COPY ./vamshi.conf /etc/nginx/conf.d
 
 	#RUN cp -R /home/* /var/www-harshad/
 	
@@ -44,5 +45,5 @@ FROM nginx:latest
 # Run the shell scripts if required
 
 #Expose required ports etc
-EXPOSE 80 8080 443
+EXPOSE 80 8080 8082 443
 
