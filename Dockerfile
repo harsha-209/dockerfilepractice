@@ -48,5 +48,5 @@ FROM nginx:latest
 # Run the shell scripts if required
 
 #Expose required ports etc
-EXPOSE 80 8080 80801 8082 8083 8084 443
+EXPOSE 80 8080 8081 8082 8083 8084 443
 
