@@ -62,7 +62,7 @@ Parameters:
                  access other AWS resources like S3 buckets, DynamoDB tables, etc
   SecurityGroup:
     Type: String
-    Default: sg-09a40228c400609ab
+    Default: sg-0d31b2dcfa48f39ad
     Description: Give a Exiting SG ID
   PrivateSubnet1:
     Type: String
@@ -76,54 +76,57 @@ Parameters:
     Type: String
     Default: vpc-05e99f3bca6bdf597
     Description: Give a PrivateSubnet1
-  Lbtargetgrouparn:
-    Type: String
-    Default: arn:aws:elasticloadbalancing:ap-south-1:703838640271:targetgroup/sk-dev-admin/03ed550b75b68eea
-    Description: This is the LB target group arn 
-  Lbtargetname:
-    Type: String
-    Default: share-kart
-    Description: This is the LB name 
-Conditions:
-  HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
+  #Lbtargetgrouparn:
+    #Type: String
+    #Default: arn:aws:elasticloadbalancing:ap-south-1:703838640271:targetgroup/sk-dev-admin/03ed550b75b68eea
+    #Description: This is the LB target group arn 
+  #Lbtargetname:
+    #Type: String
+    #Default: share-kart
+    #Description: This is the LB name 
+#Conditions:
+  #HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
 
 Resources:
-  # LoadBalancer:
-    # Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    # Properties:
-      # Subnets: 
-        # - !Ref PrivateSubnet1
-        # - !Ref PrivateSubnet2
-      # SecurityGroups:
-        # - !Ref SecurityGroup
-  # LoadBalancerListener:
-    # Type: AWS::ElasticLoadBalancingV2::Listener
-    # Properties:
-      # LoadBalancerArn: !Ref LoadBalancer
-      # Port: 80
-      # Protocol: HTTP
-      # DefaultActions:
-        # - Type: forward
-          # TargetGroupArn: !Ref DefaultTargetGroup
+   LoadBalancer:
+     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+     Properties:
+       Scheme: internet-facing
+       Subnets: 
+         - !Ref PrivateSubnet1
+         - !Ref PrivateSubnet2
+       SecurityGroups:
+         - !Ref SecurityGroup
+   LoadBalancerListener:
+     Type: AWS::ElasticLoadBalancingV2::Listener
+     Properties:
+       LoadBalancerArn: !Ref LoadBalancer
+       Port: 80
+       Protocol: HTTP
+       DefaultActions:
+         - Type: forward
+           TargetGroupArn: !Ref DefaultTargetGroup
+       LoadBalancerArn:
+           Ref: ApplicationLoadBalancer
 
-  # DefaultTargetGroup:
-    # Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    # Properties:
-      # VpcId: !Ref VpcId1
-      # Port: 80
-      # Protocol: HTTP
-      # TargetType: ip
-  # DefaultLoadBalancerRule:
-    # Type: AWS::ElasticLoadBalancingV2::ListenerRule
-    # Properties:
-      # Actions:
-        # - TargetGroupArn: !Ref 'DefaultTargetGroup'
-          # Type: 'forward'
-      # Conditions:
-        # - Field: path-pattern
-          # Values: [!Ref 'Path']
-      # ListenerArn: !Ref LoadBalancerListener
-      # Priority: !Ref 'Priority'
+   DefaultTargetGroup:
+     Type: AWS::ElasticLoadBalancingV2::TargetGroup
+     Properties:
+       VpcId: !Ref VpcId1
+       Port: 80
+       Protocol: HTTP
+       TargetType: ip
+   DefaultLoadBalancerRule:
+     Type: AWS::ElasticLoadBalancingV2::ListenerRule
+     Properties:
+       Actions:
+         - TargetGroupArn: !Ref 'DefaultTargetGroup'
+           Type: 'forward'
+       Conditions:
+         - Field: path-pattern
+           Values: [!Ref 'Path']
+       ListenerArn: !Ref LoadBalancerListener
+       Priority: !Ref 'Priority'
       
 # # This is the Public load balencer
   # PublicLoadBalancerListener:
@@ -179,11 +182,11 @@ Resources:
       # ListenerArn: !Ref PublicLoadBalancerListener
       # Priority: !Ref 'Priority'
 
-  CloudwatchLogsGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
-      RetentionInDays: 14
+  #CloudwatchLogsGroup:
+    #Type: AWS::Logs::LogGroup
+    #Properties:
+      #LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
+      #RetentionInDays: 14
       
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -204,12 +207,12 @@ Resources:
         - Name: !Ref 'ServiceName'
           Cpu: !Ref 'ContainerCpu'
           Memory: !Ref 'ContainerMemory'
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-group: !Ref 'CloudwatchLogsGroup'
-              awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: ecs-Sharekart-admin 
+          #LogConfiguration:
+            #LogDriver: awslogs
+            #Options:
+              #awslogs-group: !Ref 'CloudwatchLogsGroup'
+              #awslogs-region: !Ref 'AWS::Region'
+              #awslogs-stream-prefix: ecs-Sharekart-admin 
           Image: !Ref 'ImageUrl'     
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
@@ -236,4 +239,4 @@ Resources:
         - ContainerName: !Ref 'ServiceName'
           ContainerPort: !Ref 'ContainerPort'
           # LoadBalancerName: !Ref 'Lbtargetname'
-          TargetGroupArn: !Ref 'Lbtargetgrouparn'
+          #TargetGroupArn: !Ref 'Lbtargetgrouparn'
