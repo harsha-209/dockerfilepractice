@@ -4,24 +4,32 @@ Parameters:
   ECSTaskExecutionRole:
     Type: String
     Default: >-
-      arn:aws:iam::703838640271:role/ecsTaskExecutionRole
+      arn:aws:iam::743694115654:role/ecsTaskExecutionRole
     Description: A name for the service
   ServiceName:
     Type: String
-    Default: sharekart-admin-service
+    Default: myownnginx
     Description: A name for the service
   ClusterName:
     Type: String
-    Default: fargate-cluster123
+    Default: harshad-fargate123
     Description: A name for the service   
   ImageUrl:
     Type: String
-    Default: 703838640271.dkr.ecr.ap-south-1.amazonaws.com/share-kart-admin:latest
+    Default: 743694115654.dkr.ecr.us-east-1.amazonaws.com/harshad1:43
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   ContainerPort:
     Type: Number
     Default: 80
+    Description: What port number the application inside the docker container is binding to
+  ContainerPort:
+    Type: Number
+    Default: 8080
+    Description: What port number the application inside the docker container is binding to
+  ContainerPort:
+    Type: Number
+    Default: 8082
     Description: What port number the application inside the docker container is binding to
   ContainerCpu:
     Type: Number
@@ -58,15 +66,15 @@ Parameters:
     Description: Give a Exiting SG ID
   PrivateSubnet1:
     Type: String
-    Default: subnet-0f5853cf9b3c43d21
+    Default: subnet-043d4b6880716276c
     Description: Give a PrivateSubnet1
   PrivateSubnet2:
     Type: String
-    Default: subnet-0daa9e99b94f6c9be
+    Default: subnet-0382a7b19256e4702
     Description: Give a PrivateSubnet1
   VpcId1:
     Type: String
-    Default: vpc-02e57766c76361706
+    Default: vpc-05e99f3bca6bdf597
     Description: Give a PrivateSubnet1
   Lbtargetgrouparn:
     Type: String
