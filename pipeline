@@ -2,39 +2,74 @@ pipeline {
    agent any
 	environment 
 		{
-		  //  gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-            //shortCommitHash = gitCommitHash.take(7)
-			VERSION = 'latest'
-			PROJECT = 'prod-share-kart-admin'
-			IMAGE = 'prod-share-kart-admin:latest'
-			ECRURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/prod-share-kart-admin'
+			VERSION = 'latest'		
+			PROJECT = 'share-kart-web'
+			IMAGE = 'share-kart-web:latest'
+			ECRURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/share-kart-web'
             ECRCRED = 'ecr:ap-south-1:MusubiAWS'
-            ECRSHELLURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/prod-share-kart-admin'
+            ECRSHELLURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/share-kart-web'
 		}
    stages {
 
       stage('Checkout') {
          steps {
-          
-           git branch: 'prabhakarminfy-patch-1', credentialsId: 'musubigithub', url: 'https://github.com/MusubiManagement/ShareKart-Admin.git'
+          script {
+                properties([pipelineTriggers([pollSCM('15 10 * * *')])])
+            }
+           git branch: 'develop', credentialsId: 'musubigithub', url: 'https://github.com/MusubiManagement/ShareKart-Web.git'
 		  // git branch: 'sharekart-admin', credentialsId: 'musubigithub', url: 'https://github.com/MusubiManagement/Devops.git'
          //  sh 'sudo mkdir /opt/Share-kart-web'
          //  sh 'if [ -d "/opt/Devops/sharekartweb" ] ; then echo "Directory /opt/Share-kart-web/ exists."; else sudo mkdir /opt/Devops/sharekartweb ; fi '
           //  sh 'if [ -d "/opt/Devops/web" ] ; then echo "Directory /opt/Devops/web exists."; else sudo mkdir /opt/Devops/web ; fi '
          //  sh 'sudo cp -R /var/lib/jenkins/workspace/Dev-musubi/*  /opt/Devops/sharekartweb/'
          //  sh 'sudo cp -R /var/lib/jenkins/workspace/Musubi_Development/devops*  /opt/Devops/web/'
-           script{
-          //  gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-           // shortCommitHash = gitCommitHash.take(7)
+          /* script{
+            gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+            shortCommitHash = gitCommitHash.take(7)
             // calculate a sample version tag
-         //   VERSION = gitCommitHash
+            VERSION = gitCommitHash
             // set the build display name
-          //  currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
+            currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
             IMAGE = "$PROJECT:$VERSION"
-			//ECRSHELLURL = "$ECRURL:$VERSION"
-           }
+			ECRSHELLURL = "$ECRURL:$VERSION"
+           }*/
          
          }
       }
-   }
-}
+      stage('Build Docker-push') {
+         steps {
+             script{ 
+           	   docker.build("$IMAGE","/var/lib/jenkins/workspace/Dev-Musubi-Sharekart-Web-Update")
+
+               // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
+                    //sh("eval \$(aws ecr get-login --no-include-email | sed 's|https://||')")
+                    // Push the Docker image to ECR
+                    docker.withRegistry(ECRURL, ECRCRED)
+                    {
+                        sh 'echo "Hello"'
+                       docker.image(IMAGE).push()
+                    }
+             }
+         }
+      }
+       stage('DockerECSDeploy') {
+         steps {
+             script{ 
+			 echo "DockerECSDeploy"
+          //	sh 'aws s3 cp /var/lib/jenkins/workspace/Dev-Musubi-Sharekart-Web/sharekart-fargate.yaml s3://devops-sk-web/'
+			
+		//	sh 'if [[ "$(aws cloudformation list-stacks --stack-status-filter CREATE_IN_PROGRESS CREATE_COMPLETE ROLLBACK_IN_PROGRESS ROLLBACK_FAILED ROLLBACK_COMPLETE DELETE_IN_PROGRESS DELETE_FAILED UPDATE_IN_PROGRESS UPDATE_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_COMPLETE UPDATE_ROLLBACK_IN_PROGRESS UPDATE_ROLLBACK_FAILED UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_ROLLBACK_COMPLETE REVIEW_IN_PROGRESS --query "StackSummaries[*].StackName" --output text)" == "sharekart-web-stack" ]] ; then $(aws cloudformation update-stack --stack-name sharekart-web-stack --template-url=https://devops-sk-web.s3.ap-south-1.amazonaws.com/sharekart-fargate.yaml --capabilities CAPABILITY_AUTO_EXPAND --capabilities CAPABILITY_IAM --parameters ParameterKey=ImageUrl,ParameterValue=$ECRSHELLURL:$VERSION)     ; else $(aws cloudformation create-stack --stack-name sharekart-web-stack --template-url=https://devops-sk-web.s3.ap-south-1.amazonaws.com/sharekart-fargate.yaml --capabilities CAPABILITY_AUTO_EXPAND --capabilities CAPABILITY_IAM --parameters ParameterKey=ImageUrl,ParameterValue=$ECRSHELLURL:$VERSION)  ; fi '
+		 //   sh 'aws cloudformation create-stack --stack-name sharekart-web-stack --template-url=https://devops-sk-web.s3.ap-south-1.amazonaws.com/sharekart-fargate.yaml --capabilities CAPABILITY_AUTO_EXPAND --capabilities CAPABILITY_IAM'
+		// sh 'aws cloudformation update-stack --stack-name sharekart-web-stack --template-url=https://devops-sk-web.s3.ap-south-1.amazonaws.com/sharekart-fargate.yaml --capabilities CAPABILITY_AUTO_EXPAND --capabilities CAPABILITY_IAM --parameters ParameterKey=ImageUrl,ParameterValue=$ECRSHELLURL:$VERSION'
+		sh 'aws ecs update-service --cluster fargate-cluster123 --service sharekart-web-service --force-new-deployment --task-definition sharekart-web-service --desired-count 2'
+             }
+         }
+      }
+      stage('SlackNotification') {
+         steps {
+             script{ 
+           	 sh 'echo "Notification Issue"'
+                    slackSend channel: 'musubihq', message: 'Build Success', tokenCredentialId: 'MusubiSlack'
+             }
+         }
+      }
