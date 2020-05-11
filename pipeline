@@ -1,0 +1,40 @@
+pipeline {
+   agent any
+	environment 
+		{
+		  //  gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+            //shortCommitHash = gitCommitHash.take(7)
+			VERSION = 'latest'
+			PROJECT = 'prod-share-kart-admin'
+			IMAGE = 'prod-share-kart-admin:latest'
+			ECRURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/prod-share-kart-admin'
+            ECRCRED = 'ecr:ap-south-1:MusubiAWS'
+            ECRSHELLURL = 'https://703838640271.dkr.ecr.ap-south-1.amazonaws.com/prod-share-kart-admin'
+		}
+   stages {
+
+      stage('Checkout') {
+         steps {
+          
+           git branch: 'prabhakarminfy-patch-1', credentialsId: 'musubigithub', url: 'https://github.com/MusubiManagement/ShareKart-Admin.git'
+		  // git branch: 'sharekart-admin', credentialsId: 'musubigithub', url: 'https://github.com/MusubiManagement/Devops.git'
+         //  sh 'sudo mkdir /opt/Share-kart-web'
+         //  sh 'if [ -d "/opt/Devops/sharekartweb" ] ; then echo "Directory /opt/Share-kart-web/ exists."; else sudo mkdir /opt/Devops/sharekartweb ; fi '
+          //  sh 'if [ -d "/opt/Devops/web" ] ; then echo "Directory /opt/Devops/web exists."; else sudo mkdir /opt/Devops/web ; fi '
+         //  sh 'sudo cp -R /var/lib/jenkins/workspace/Dev-musubi/*  /opt/Devops/sharekartweb/'
+         //  sh 'sudo cp -R /var/lib/jenkins/workspace/Musubi_Development/devops*  /opt/Devops/web/'
+           script{
+          //  gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+           // shortCommitHash = gitCommitHash.take(7)
+            // calculate a sample version tag
+         //   VERSION = gitCommitHash
+            // set the build display name
+          //  currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
+            IMAGE = "$PROJECT:$VERSION"
+			//ECRSHELLURL = "$ECRURL:$VERSION"
+           }
+         
+         }
+      }
+   }
+}
