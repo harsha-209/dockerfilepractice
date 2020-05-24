@@ -19,7 +19,7 @@ FROM nginx:latest
 	
 
 	COPY . /var/www/harshad
-	COPY . /var/www1/harshad1
+	COPY  harshad.html  /var/www1/harshad1
 	COPY ./harshad.conf /etc/nginx/conf.d
 	COPY ./bharath.conf /etc/nginx/conf.d
 	#COPY ./vamshi.conf /etc/nginx/conf.d
