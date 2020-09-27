@@ -31,6 +31,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 140839674073.dkr.ecr.ap-south-1.amazonaws.com/harshad:latest
+        image: CONTAINER_IMAGE
         ports:
         - containerPort: 8080
