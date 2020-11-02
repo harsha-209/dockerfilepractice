@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    image: nginx:latest #using this version as it's the same on my server
+    volumes:
+      - "./test.conf:/etc/nginx/sites-available/test.local"
+      - "./test.conf:/etc/nginx/sites-enabled/test.local"
+      - "./code:/usr/share/nginx/html" #code contains only a basic index.html file
+    ports:
+      - "80:80"
